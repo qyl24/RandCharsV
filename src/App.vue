@@ -97,9 +97,22 @@ const toggleInputDisplay = () => {
 };
 
 const handleRefresh = () => {
-  // 触发重新绘制
   console.log('handleRefresh');
-  draw(mainCanvas.value, workspacePattern);
+
+  // 确保workspacePattern数据同步到DOM
+  if (mainCanvas.value) {
+    // 更新画布尺寸以匹配当前模式
+    initCanvasSize(mainCanvas.value, workspacePattern);
+    // 触发重新绘制
+    draw(mainCanvas.value, workspacePattern);
+  }
+
+  // 同步输入框和选择器的值
+  inputText.value = workspacePattern.chars.join('');
+  selectedShape.value = workspacePattern.shape;
+  selectedFont.value = workspacePattern.fontFamily;
+  selectedLineStyle.value = workspacePattern.lineStyle;
+  selectedScale.value = (workspacePattern.scale / adjustmentScale).toString();
 };
 
 watch([inputText, selectedShape, selectedFont, selectedLineStyle, selectedScale], () => {

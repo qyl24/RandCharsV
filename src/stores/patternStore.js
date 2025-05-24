@@ -33,6 +33,7 @@ export const usePatternStore = defineStore('pattern', () => {
   // 是否启用日期变化
   // 用于测试日期偏移效果
   const enableDayChangeFlag = reactive({ value: false })
+  enableDayChangeFlag.value = true
   let timer = null
 
   // 启动定时器

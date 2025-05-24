@@ -14,28 +14,46 @@ function calculateDiamond(canvas, pattern) {
     const V4 = { x: centerX, y: centerY + height };  // 下
 
     const positions = [];
-    positions.push(V1, V2, V3);
 
-    if (n > 4) {
-        const remaining = n - 4;
-        const edges = [
-            { start: V1, end: V2 }, // 上左边
-            { start: V1, end: V3 }, // 上右边
-            { start: V2, end: V4 }, // 下左边
-            { start: V3, end: V4 }  // 下右边
-        ];
+    // 根据n值选择顶点
+    if (n === 1) {
+        positions.push(V1);
+    } else if (n === 2) {
+        positions.push(V2, V3);
+    } else if (n === 3) {
+        positions.push(V1, V2, V3);
+    } else {
+        // n >=4 的情况
+        const includeV4 = (n - 4) % 2 === 0; // 先判断n-4是否为偶数
+        positions.push(V1, V2, V3);
+        if (includeV4) positions.push(V4);
 
-        // 按优先级分配
-        const perEdge = Math.floor(remaining / 4);
-        const extra = remaining % 4;
+        if (n > 4) {
+            const remaining = includeV4 ? n - 4 : n - 3;
+            const edges = [
+                { start: V1, end: V2 }, // 上左边
+                { start: V1, end: V3 }, // 上右边
+                { start: V2, end: V4 }, // 下左边
+                { start: V3, end: V4 }  // 下右边
+            ];
 
-        addEdgePoints(edges[0], perEdge + (extra > 0 ? 1 : 0), positions);
-        addEdgePoints(edges[1], perEdge + (extra > 1 ? 1 : 0), positions);
-        addEdgePoints(edges[2], perEdge + (extra > 2 ? 1 : 0), positions);
-        addEdgePoints(edges[3], perEdge, positions);
+            // 确保每条边分配的点数为偶数
+            const perEdge = Math.floor(remaining / 4)
+            const extra = remaining % 4;
+
+            // 分配剩余点到各边
+            if (extra > 0) {
+                addEdgePoints(edges[0], perEdge + (extra > 0 ? 1 : 0), positions);
+                addEdgePoints(edges[1], perEdge + (extra > 0 ? 1 : 0), positions);
+
+                addEdgePoints(edges[2], perEdge, positions);
+                addEdgePoints(edges[3], perEdge, positions);
+            } else {
+                edges.forEach(edge => addEdgePoints(edge, perEdge, positions));
+            }
+        }
     }
 
-    positions.push(V4);
     return positions.slice(0, n);
 }
 
