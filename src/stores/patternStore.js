@@ -158,7 +158,7 @@ export const usePatternStore = defineStore('pattern', () => {
    * 切换当前日期
    * @param {string} date - 要切换到的日期(YYYY/MM/DD)
    */
-  function switchDate(date) {
+  function switchDate(date, ctwoh = true) {
     if (!historyPattern.has(date)) {
       historyPattern.set(date, [])
     }
@@ -171,7 +171,9 @@ export const usePatternStore = defineStore('pattern', () => {
     }
 
     updateTotalPage()
-    copyToWorkspaceOnHistory()
+    if (ctwoh) {
+      copyToWorkspaceOnHistory()
+    }
   }
 
   // 上一页
@@ -184,6 +186,9 @@ export const usePatternStore = defineStore('pattern', () => {
       reactiveDeepCopy(workspacePattern, tempSavePattern)
       const list = historyPattern.get(selectedDate.value) || []
       currIndex.value = list.length - 1
+      if (currIndex.value < 0) {
+        currIndex.value = WORKSPACE_IDX
+      }
       copyToWorkspaceOnHistory()
     } else if (currIndex.value > 0) {
       currIndex.value--
@@ -203,7 +208,7 @@ export const usePatternStore = defineStore('pattern', () => {
     if (currIndex.value < list.length - 1) {
       currIndex.value++
       copyToWorkspaceOnHistory()
-    } else if (currIndex.value === list.length - 1) {
+    } else if (currIndex.value >= list.length - 1) {
       reactiveDeepCopy(tempSavePattern, workspacePattern)
       currIndex.value = WORKSPACE_IDX
     }
@@ -241,7 +246,7 @@ export const usePatternStore = defineStore('pattern', () => {
         }
       }
       // 切换日期
-      switchDate(currentDate)
+      switchDate(currentDate, false)
       targetDate = currentDate
     }
 
@@ -273,6 +278,7 @@ export const usePatternStore = defineStore('pattern', () => {
    */
   function copyToWorkspaceOnHistory() {
     if (currIndex.value !== WORKSPACE_IDX) {
+      console.log('Copying pattern from history to workspace')
       const pattern = getPatternByIndex(currIndex.value)
       reactiveDeepCopy(pattern, workspacePattern)
     }

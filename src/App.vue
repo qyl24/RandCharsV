@@ -115,26 +115,21 @@ const toggleInputDisplay = () => {
 const handleRefresh = () => {
   console.log('handleRefresh');
 
-  // 确保workspacePattern数据同步到DOM
-  if (mainCanvas.value) {
-    // 更新画布尺寸以匹配当前模式
-    initCanvasSize(mainCanvas.value, workspacePattern);
-    // 触发重新绘制
-    draw(mainCanvas.value, workspacePattern);
-  }
-
   // 同步输入框和选择器的值
   inputText.value = workspacePattern.chars.join('');
   selectedShape.value = workspacePattern.shape;
   selectedFont.value = workspacePattern.fontFamily;
   selectedLineStyle.value = workspacePattern.lineStyle;
   selectedScale.value = (workspacePattern.scale / adjustmentScale).toString();
+
+  //raw(mainCanvas.value, workspacePattern);
 };
 
 // 监听用户输入和参数变化，自动更新画布
 watch([inputText, selectedShape, selectedFont, selectedLineStyle, selectedScale], () => {
   console.log('watch 1')
   // 当任何参数变化时，更新工作区模式并重绘画布
+  patternStore.copyToWorkspaceOnHistory();
 
   const defaultText = "水里有很多小鱼".split('');
   workspacePattern.chars = inputText.value ? [...inputText.value] : [...defaultText];
