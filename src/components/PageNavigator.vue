@@ -15,9 +15,11 @@ const emit = defineEmits(['refresh'])
 const patternStore = usePatternStore();
 
 const currentIndexDisplay = computed(() => {
-  return patternStore.currIndex.value === patternStore.WORKSPACE_IDX
-    ? 'W'
-    : patternStore.currIndex.value + 1
+  let res = patternStore.currIndex.value === patternStore.WORKSPACE_IDX ? 'W' : patternStore.currIndex.value + 1
+  if (res === 1 && totalPage.value === 0) {
+    res = 'D'
+  }
+  return res
 })
 
 const totalPage = computed(() => patternStore.totalPage.value)

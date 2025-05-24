@@ -169,6 +169,9 @@ export const usePatternStore = defineStore('pattern', () => {
     if (currIndex.value >= list.length) {
       currIndex.value = list.length - 1
     }
+    if (currIndex.value === -1) {
+      currIndex.value = 0
+    }
 
     updateTotalPage()
     if (ctwoh) {
