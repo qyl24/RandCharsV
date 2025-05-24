@@ -1,5 +1,17 @@
+/**
+ * 菱形形状绘图工具
+ * 包含计算字符位置和绘制菱形的功能
+ * 支持不同字符数量的位置分配和缩放控制
+ */
 import { addEdgePoints } from '@/composables/tools';
 
+/**
+ * 计算菱形形状中字符的位置
+ * 根据字符数量分配位置到菱形的顶点和边上
+ * @param {HTMLCanvasElement} canvas - 画布元素
+ * @param {Object} pattern - 图形模式配置
+ * @returns {Array} 字符位置数组
+ */
 function calculateDiamond(canvas, pattern) {
     const n = pattern.chars.length;
     const centerX = canvas.width / 2;
@@ -57,6 +69,11 @@ function calculateDiamond(canvas, pattern) {
     return positions.slice(0, n);
 }
 
+/**
+ * 绘制菱形形状
+ * @param {HTMLCanvasElement} canvas - 画布元素
+ * @param {Object} pattern - 图形模式配置
+ */
 function drawDiamond(canvas, pattern) {
     const ctx = canvas.getContext('2d');
     const centerX = canvas.width / 2;

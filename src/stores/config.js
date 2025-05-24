@@ -1,9 +1,19 @@
+/**
+ * 应用配置存储
+ * 包含字体、缩放比例、形状和线条样式等配置选项
+ * 这些配置用于控制图形生成的各种参数
+ */
 import { defineStore } from 'pinia'
 
 export const useConfigStore = defineStore('config', {
   state: () => ({
+    /**
+     * 字体列表配置
+     * 包含中英文字体选项，用于图形中的文本渲染
+     * 结构: {value: 字体名称, name: 显示名称}
+     */
     fontList: [
-      // 中文系统字体
+      /* 中文系统字体 */
       { value: '微软雅黑', name: '微软雅黑' },
       { value: 'SimSun', name: '宋体 (SimSun)' },
       { value: 'SimHei', name: '黑体 (SimHei)' },
@@ -60,8 +70,13 @@ export const useConfigStore = defineStore('config', {
       { value: 'Lato', name: 'Lato' },
       { value: 'Montserrat', name: 'Montserrat' }
     ],
+    /**
+     * 缩放比例选项
+     * 控制图形的大小缩放比例
+     * 结构: {value: 比例值, label: 显示标签}
+     */
     scaleOptions: [
-      { value: 0.50, label: '50% (默认)' },
+      { value: 0.50, label: '50% (默认)' },  // 默认缩放比例
       { value: 0.70, label: '70%' },
       { value: 0.65, label: '65%' },
       { value: 0.60, label: '60%' },
@@ -71,14 +86,24 @@ export const useConfigStore = defineStore('config', {
       { value: 0.35, label: '35%' },
       { value: 0.30, label: '30%' }
     ],
+    /**
+     * 形状选项
+     * 定义可选的图形形状类型
+     * 结构: {value: 形状标识, label: 显示名称}
+     */
     shapeOptions: [
-      { value: 'diamond', label: '菱形' },
+      { value: 'diamond', label: '菱形' },  // 菱形形状
       { value: 'triangle', label: '三角形' },
       { value: 'ellipse', label: '椭圆形' },
       { value: 'rectangle', label: '矩形' }
     ],
+    /**
+     * 线条样式选项
+     * 定义图形边框的线条样式
+     * 结构: {value: 样式标识, label: 显示名称}
+     */
     lineStyleOptions: [
-      { value: 'solid', label: '实线' },
+      { value: 'solid', label: '实线' },  // 实线样式
       { value: 'dashed1', label: '虚线1' },
       { value: 'dashed2', label: '虚线2' }
     ]

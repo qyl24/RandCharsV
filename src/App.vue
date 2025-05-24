@@ -1,3 +1,11 @@
+<!-- 
+  应用根组件，主要功能：
+  1. 提供应用主布局和结构
+  2. 管理用户输入和图形参数
+  3. 处理画布绘制和交互
+  4. 实现截图功能
+  5. 集成各子组件(NavigationPanel, TimestampWeather等)
+-->
 <template>
   <div class="main-container">
     <NavigationPanel @refresh="handleRefresh" />
@@ -59,43 +67,51 @@ console.log('setup');
 
 import { onMounted, ref, watch } from 'vue';
 
+// 导入子组件
 import NavigationPanel from './components/NavigationPanel.vue';
 import TimestampWeather from '@/components/TimestampWeather.vue';
 import PageNavigator from './components/PageNavigator.vue';
-
 import Toolbar from '@/components/ToolbarOfR.vue';
 
+// 导入截图库
 import html2canvas from 'html2canvas';
 
+// 导入状态管理和绘图工具
 import { useConfigStore } from '@/stores/config'
 import { draw, initCanvasSize } from '@/composables/drawing/mainDrawing'
 import { useCanvasInteraction } from '@/composables/useCanvasInteraction';
 import { usePatternStore } from '@/stores/patternStore';
+// 使用状态管理
 const patternStore = usePatternStore();
 const workspacePattern = patternStore.workspacePattern;
-
-
 const configStore = useConfigStore();
 
-const inputText = ref('');
-const selectedShape = ref('diamond');
-const selectedFont = ref('微软雅黑');
-const selectedLineStyle = ref('solid');
-const selectedScale = ref('0.5');
+// 定义响应式数据
+const inputText = ref(''); // 用户输入文本
+const selectedShape = ref('diamond'); // 当前选择的形状
+const selectedFont = ref('微软雅黑'); // 当前选择的字体
+const selectedLineStyle = ref('solid'); // 当前选择的线条样式
+const selectedScale = ref('0.5'); // 当前选择的缩放比例
 
-const capture = ref(null);
-const mainCanvas = ref(null);
+// 画布相关引用
+const capture = ref(null); // 截图容器引用
+const mainCanvas = ref(null); // 主画布引用
 
+// 比例调整常数
 const adjustmentScale = 1.6;
 
+// 初始化画布交互功能
 const { handleClickOnCanvas } = useCanvasInteraction(mainCanvas, workspacePattern);
 
+// 控制输入框显示状态
 const showInput = ref(true);
 
+// 切换输入框显示状态
 const toggleInputDisplay = () => {
   showInput.value = !showInput.value;
 };
 
+// 刷新画布
 const handleRefresh = () => {
   console.log('handleRefresh');
 
@@ -115,8 +131,10 @@ const handleRefresh = () => {
   selectedScale.value = (workspacePattern.scale / adjustmentScale).toString();
 };
 
+// 监听用户输入和参数变化，自动更新画布
 watch([inputText, selectedShape, selectedFont, selectedLineStyle, selectedScale], () => {
   console.log('watch 1')
+  // 当任何参数变化时，更新工作区模式并重绘画布
 
   const defaultText = "水里有很多小鱼".split('');
   workspacePattern.chars = inputText.value ? [...inputText.value] : [...defaultText];
