@@ -3,9 +3,16 @@
     <NavigationPanel @refresh="handleRefresh" />
 
     <div class="content-container">
-      <InputContainer v-model="inputText" />
+      <div class="input-container">
+        <input class="input-text" placeholder="请输入一句话，如：水里有很多小鱼" v-model="inputText"
+          :type="showInput ? 'text' : 'password'">
+        <button class="toggle-btn" @click="toggleInputDisplay">
+          {{ showInput ? '隐藏' : '显示' }}
+        </button>
+      </div>
 
       <div class="canvas-container">
+        <PageNavigator @refresh="handleRefresh" />
 
         <div class="inner-menu">
           <Toolbar @refresh="handleRefresh" @copy="captureImage" />
@@ -54,7 +61,8 @@ import { onMounted, ref, watch } from 'vue';
 
 import NavigationPanel from './components/NavigationPanel.vue';
 import TimestampWeather from '@/components/TimestampWeather.vue';
-import InputContainer from '@/components/InputContainer.vue';
+import PageNavigator from './components/PageNavigator.vue';
+
 import Toolbar from '@/components/ToolbarOfR.vue';
 
 import html2canvas from 'html2canvas';
@@ -81,6 +89,12 @@ const mainCanvas = ref(null);
 const adjustmentScale = 1.6;
 
 const { handleClickOnCanvas } = useCanvasInteraction(mainCanvas, workspacePattern);
+
+const showInput = ref(true);
+
+const toggleInputDisplay = () => {
+  showInput.value = !showInput.value;
+};
 
 const handleRefresh = () => {
   // 触发重新绘制

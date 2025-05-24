@@ -17,15 +17,14 @@ const patternStore = usePatternStore();
 const handleNew = () => {
   console.log('handleNew');
 
-  patternStore.saveToPatterns();
-  patternStore.copyDefaultToWorkspace();
+  patternStore.newPattern()
   emit('refresh');
 };
 
 const handleSave = () => {
   console.log('handleSave');
 
-  if (patternStore.saveToPatterns()) {
+  if (patternStore.savePattern()) {
     alert('保存成功！');
   } else {
     alert('内容已存在，无需重复保存');

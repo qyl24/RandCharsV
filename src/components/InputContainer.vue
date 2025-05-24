@@ -1,39 +1,39 @@
 <template>
   <div class="input-container">
-    <input class="input-text" placeholder="请输入一句话，如：水里有很多小鱼" v-model="inputText"
+    <!-- <input class="input-text" placeholder="请输入一句话，如：水里有很多小鱼" v-model="inputText"
       :type="showInput ? 'text' : 'password'">
     <button class="toggle-btn" @click="toggleInputDisplay">
       {{ showInput ? '隐藏' : '显示' }}
-    </button>
+    </button> -->
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+// import { ref, computed } from 'vue';
 
-const props = defineProps({
-  modelValue: {
-    type: String,
-    required: true
-  }
-});
+// const props = defineProps({
+//   modelValue: {
+//     type: String,
+//     required: true
+//   }
+// });
 
-const emit = defineEmits(['update:modelValue']);
+// const emit = defineEmits(['update:modelValue']);
 
-const showInput = ref(true);
+// const showInput = ref(true);
 
-const inputText = computed({
-  get: () => props.modelValue,
-  set: (value) => emit('update:modelValue', value)
-});
+// const inputText = computed({
+//   get: () => props.modelValue,
+//   set: (value) => emit('update:modelValue', value)
+// });
 
-const toggleInputDisplay = () => {
-  showInput.value = !showInput.value;
-};
+// const toggleInputDisplay = () => {
+//   showInput.value = !showInput.value;
+// };
 </script>
 
 <style scoped>
-.input-container {
+/* .input-container {
   position: relative;
   display: flex;
   width: 750px;
@@ -60,5 +60,5 @@ const toggleInputDisplay = () => {
 
 .toggle-btn:hover {
   background: #79bbff;
-}
+} */
 </style>

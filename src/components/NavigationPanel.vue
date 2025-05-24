@@ -8,20 +8,33 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { usePatternStore } from '@/stores/patternStore';
 
 const emit = defineEmits(['refresh']);
 
 const patternStore = usePatternStore();
-const dateList = computed(() => patternStore.getDateList());
+const dateList = ref([]);
 const selectedDate = ref('');
+
+// 更新日期列表
+function updateDateList() {
+  dateList.value = patternStore.getDateList();
+}
+
+// 初始化
+updateDateList();
+
+// 监听store中的日期变化
+watch(() => patternStore.selectedDate.value, () => {
+  updateDateList();
+});
 
 // 选择日期
 function selectDate(date) {
   console.log('select date:', date);
   selectedDate.value = date;
-  patternStore.loadPattern(date);
+  patternStore.switchDate(date);
   emit('refresh');
 }
 </script>
