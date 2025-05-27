@@ -8,14 +8,14 @@ import { reactive } from 'vue'
 import { cloneDeep } from 'lodash-es'
 
 export const usePatternStore = defineStore('pattern', () => {
-  // 常量定义
+  // ====================== 常量定义部分 ======================
   /**
    * 工作区模式的特殊索引值
    * 用于标识当前操作的是工作区而非历史记录
    */
   const WORKSPACE_IDX = -24
 
-  // 默认模式配置
+  // ====================== 状态定义部分 ======================
   /**
    * 默认图形模式配置
    * 包含字符、形状、字体等默认值
@@ -31,7 +31,6 @@ export const usePatternStore = defineStore('pattern', () => {
     fontSizes: []
   })
 
-  // 状态定义
   /**
    * 工作区当前图形模式
    * 用户正在编辑的图形模式
@@ -66,12 +65,9 @@ export const usePatternStore = defineStore('pattern', () => {
    */
   const totalPage = reactive({ value: 0 })
 
-  //------------------------WARNING------------------------
-  //测试用
-  // 日期偏移状态
+  // ====================== 初始化部分 ======================
+  // 测试用日期偏移状态
   const dayOffset = reactive({ value: 0 })
-  // 是否启用日期变化
-  // 用于测试日期偏移效果
   const enableDayChangeFlag = reactive({ value: false })
   enableDayChangeFlag.value = true
   let timer = null
@@ -87,7 +83,10 @@ export const usePatternStore = defineStore('pattern', () => {
     }
   }
 
-  // 格式化日期为YYYY/MM/DD
+  // 初始化时启动定时器
+  startDateTimer()
+
+  // ====================== 格式化时间功能部分 ======================
   /**
    * 格式化日期并应用日期偏移
    * @param {Date} date - 要格式化的日期
@@ -108,52 +107,13 @@ export const usePatternStore = defineStore('pattern', () => {
     return result
   }
 
-  // 初始化时启动定时器
-  startDateTimer()
-
   // 初始化
   const today = formatDate
   historyPattern.set(today(), [])
   selectedDate.value = today()
   updateTotalPage()
 
-  /**
-   * 响应式深拷贝
-   * 将source对象的属性深度拷贝到target对象
-   * @param {Object} source - 源对象
-   * @param {Object} target - 目标对象
-   * @returns {Object} 拷贝后的目标对象
-   */
-  function reactiveDeepCopy(source, target) {
-    const rawCopy = cloneDeep(source)
-    Object.keys(rawCopy).forEach(key => {
-      target[key] = rawCopy[key]
-    })
-    return target
-  }
-
-  // 更新总页数
-  /**
-   * 更新当前日期的总页数
-   */
-  function updateTotalPage() {
-    const list = historyPattern.get(selectedDate.value) || []
-    totalPage.value = list.length
-  }
-
-  // 根据下标获取pattern
-  /**
-   * 根据索引获取图形模式
-   * @param {number} index - 模式索引
-   * @returns {Object} 对应的图形模式
-   */
-  function getPatternByIndex(index) {
-    if (index === WORKSPACE_IDX) return workspacePattern
-    const list = historyPattern.get(selectedDate.value) || []
-    return list[index] || defaultPattern
-  }
-
-  // 切换日期
+  // ====================== 状态修改部分 ======================
   /**
    * 切换当前日期
    * @param {string} date - 要切换到的日期(YYYY/MM/DD)
@@ -179,7 +139,6 @@ export const usePatternStore = defineStore('pattern', () => {
     }
   }
 
-  // 上一页
   /**
    * 切换到上一页历史记录
    * 如果当前在工作区，则保存工作区状态到临时存储
@@ -199,7 +158,6 @@ export const usePatternStore = defineStore('pattern', () => {
     }
   }
 
-  // 下一页
   /**
    * 切换到下一页历史记录
    * 如果当前在最后一页，则恢复临时存储的工作区状态
@@ -217,21 +175,6 @@ export const usePatternStore = defineStore('pattern', () => {
     }
   }
 
-  // 创建新日期
-  /**
-   * 创建新日期的历史记录
-   * @param {string} dateStr - 日期字符串(YYYY/MM/DD)
-   * @returns {boolean} 是否创建成功
-   */
-  function newDate(dateStr = formatDate()) {
-    if (!historyPattern.has(dateStr)) {
-      historyPattern.set(dateStr, [])
-      return true
-    }
-    return false
-  }
-
-  // 保存模式
   /**
    * 保存当前工作区模式到历史记录
    * @returns {boolean} 是否保存成功
@@ -243,12 +186,10 @@ export const usePatternStore = defineStore('pattern', () => {
     // 如果当前日期与选择日期不同，尝试切换
     if (currentDate !== targetDate) {
       if (!historyPattern.has(currentDate)) {
-        // 日期不存在则创建
         if (!newDate(currentDate)) {
           return false
         }
       }
-      // 切换日期
       switchDate(currentDate, false)
       targetDate = currentDate
     }
@@ -266,7 +207,6 @@ export const usePatternStore = defineStore('pattern', () => {
     return false
   }
 
-  // 新建模式
   /**
    * 重置工作区模式为默认值
    */
@@ -275,7 +215,54 @@ export const usePatternStore = defineStore('pattern', () => {
     currIndex.value = WORKSPACE_IDX
   }
 
-  // 从历史复制到工作区
+  // ====================== 内部工具部分 ======================
+  /**
+   * 响应式深拷贝
+   * 将source对象的属性深度拷贝到target对象
+   * @param {Object} source - 源对象
+   * @param {Object} target - 目标对象
+   * @returns {Object} 拷贝后的目标对象
+   */
+  function reactiveDeepCopy(source, target) {
+    const rawCopy = cloneDeep(source)
+    Object.keys(rawCopy).forEach(key => {
+      target[key] = rawCopy[key]
+    })
+    return target
+  }
+
+  /**
+   * 更新当前日期的总页数
+   */
+  function updateTotalPage() {
+    const list = historyPattern.get(selectedDate.value) || []
+    totalPage.value = list.length
+  }
+
+  /**
+   * 根据索引获取图形模式
+   * @param {number} index - 模式索引
+   * @returns {Object} 对应的图形模式
+   */
+  function getPatternByIndex(index) {
+    if (index === WORKSPACE_IDX) return workspacePattern
+    const list = historyPattern.get(selectedDate.value) || []
+    return list[index] || defaultPattern
+  }
+
+  /**
+   * 创建新日期的历史记录
+   * @param {string} dateStr - 日期字符串(YYYY/MM/DD)
+   * @returns {boolean} 是否创建成功
+   */
+  function newDate(dateStr = formatDate()) {
+    if (!historyPattern.has(dateStr)) {
+      historyPattern.set(dateStr, [])
+      return true
+    }
+    return false
+  }
+
   /**
    * 将历史记录中的模式复制到工作区
    */
@@ -287,7 +274,6 @@ export const usePatternStore = defineStore('pattern', () => {
     }
   }
 
-  // 获取日期列表
   /**
    * 获取所有日期列表
    * @returns {Array} 日期字符串数组

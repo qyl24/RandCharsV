@@ -65,6 +65,8 @@
 <script setup>
 console.log('setup');
 
+// ====================== 初始化部分 ======================
+// 导入Vue核心功能
 import { onMounted, ref, watch } from 'vue';
 
 // 导入子组件
@@ -73,7 +75,7 @@ import TimestampWeather from '@/components/TimestampWeather.vue';
 import PageNavigator from './components/PageNavigator.vue';
 import Toolbar from '@/components/ToolbarOfR.vue';
 
-// 导入截图库
+// 导入第三方库
 import html2canvas from 'html2canvas';
 
 // 导入状态管理和绘图工具
@@ -81,7 +83,8 @@ import { useConfigStore } from '@/stores/config'
 import { draw, initCanvasSize } from '@/composables/drawing/mainDrawing'
 import { useCanvasInteraction } from '@/composables/useCanvasInteraction';
 import { usePatternStore } from '@/stores/patternStore';
-// 使用状态管理
+
+// 初始化状态管理
 const patternStore = usePatternStore();
 const workspacePattern = patternStore.workspacePattern;
 const configStore = useConfigStore();
@@ -103,15 +106,23 @@ const adjustmentScale = 1.6;
 // 初始化画布交互功能
 const { handleClickOnCanvas } = useCanvasInteraction(mainCanvas, workspacePattern);
 
-// 控制输入框显示状态
+// 输入框显示状态
 const showInput = ref(true);
 
-// 切换输入框显示状态
+
+// ====================== 输入框显示状态切换部分 ======================
+/**
+ * 切换输入框显示状态（明文/密文）
+ */
 const toggleInputDisplay = () => {
   showInput.value = !showInput.value;
 };
 
-// 刷新画布
+
+// ====================== 刷新功能部分 ======================
+/**
+ * 刷新画布显示，同步输入框和选择器的值
+ */
 const handleRefresh = () => {
   console.log('handleRefresh');
 
@@ -121,11 +132,13 @@ const handleRefresh = () => {
   selectedFont.value = workspacePattern.fontFamily;
   selectedLineStyle.value = workspacePattern.lineStyle;
   selectedScale.value = (workspacePattern.scale / adjustmentScale).toString();
-
-  //raw(mainCanvas.value, workspacePattern);
 };
 
-// 监听用户输入和参数变化，自动更新画布
+
+// ====================== 监听重绘部分 ======================
+/**
+ * 监听用户输入和参数变化，自动更新画布
+ */
 watch([inputText, selectedShape, selectedFont, selectedLineStyle, selectedScale], () => {
   console.log('watch 1')
   // 当任何参数变化时，更新工作区模式并重绘画布
@@ -140,26 +153,18 @@ watch([inputText, selectedShape, selectedFont, selectedLineStyle, selectedScale]
 
   if (mainCanvas.value) {
     console.log('watch 1-2')
-
     draw(mainCanvas.value, workspacePattern);
   }
 });
 
-onMounted(() => {
-  console.log('onMounted');
 
-  if (mainCanvas.value) {
-    console.log('onMounted-2')
-    initCanvasSize(mainCanvas.value, workspacePattern);
-  }
-})
-
+// ====================== 截图功能部分 ======================
+/**
+ * 捕获当前画布内容并复制到剪贴板
+ */
 async function captureImage() {
   console.log("captureImage")
   try {
-    // 更新当前时间戳
-    //updateTimestamp();
-
     // 使用 html2canvas 截图
     const canvas = await html2canvas(capture.value);
 
@@ -182,6 +187,16 @@ async function captureImage() {
   }
 }
 
+
+// ====================== 生命周期钩子部分 ======================
+onMounted(() => {
+  console.log('onMounted');
+
+  if (mainCanvas.value) {
+    console.log('onMounted-2')
+    initCanvasSize(mainCanvas.value, workspacePattern);
+  }
+})
 </script>
 
 <style scoped>
