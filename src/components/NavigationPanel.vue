@@ -19,7 +19,7 @@ const selectedDate = ref('');
 
 // 更新日期列表
 function updateDateList() {
-  dateList.value = patternStore.getDateList();
+  dateList.value = patternStore.getDateList().reverse();
 }
 
 // 初始化
