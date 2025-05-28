@@ -4,10 +4,47 @@
  * 包括工作区模式、临时保存和历史记录管理
  */
 import { defineStore } from 'pinia'
-import { reactive } from 'vue'
+import { reactive, watch } from 'vue'
 import { cloneDeep } from 'lodash-es'
 
 export const usePatternStore = defineStore('pattern', () => {
+  // 从localStorage加载数据
+  const loadFromStorage = () => {
+    console.log('Loading patterns from storage $$$')
+
+    const saved = localStorage.getItem('patternStore')
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved)
+        if (parsed.workspacePattern) {
+          reactiveDeepCopy(parsed.workspacePattern, workspacePattern)
+        }
+        if (parsed.historyPattern) {
+          historyPattern.clear()
+          Object.entries(parsed.historyPattern).forEach(([date, patterns]) => {
+            historyPattern.set(date, patterns.map(p => reactive({ ...p })))
+          })
+        }
+        if (parsed.selectedDate) {
+          selectedDate.value = parsed.selectedDate
+        }
+      } catch (e) {
+        console.error('Failed to parse saved patterns', e)
+      }
+    }
+  }
+
+  // 保存数据到localStorage
+  const saveToStorage = () => {
+    console.log('Saving patterns to storage $$$')
+
+    const toSave = {
+      workspacePattern: { ...workspacePattern },
+      historyPattern: Object.fromEntries(historyPattern),
+      selectedDate: selectedDate.value
+    }
+    localStorage.setItem('patternStore', JSON.stringify(toSave))
+  }
   // ====================== 常量定义部分 ======================
   /**
    * 工作区模式的特殊索引值
@@ -69,7 +106,10 @@ export const usePatternStore = defineStore('pattern', () => {
   // 测试用日期偏移状态
   const dayOffset = reactive({ value: 0 })
   const enableDayChangeFlag = reactive({ value: false })
+  //-----------------------WARNING-----------------------
+  // 以下代码仅用于测试的日期偏移功能，请勿在生产环境中使用
   enableDayChangeFlag.value = true
+  //-----------------------------------------------------
   let timer = null
 
   // 启动定时器
@@ -109,8 +149,11 @@ export const usePatternStore = defineStore('pattern', () => {
 
   // 初始化
   const today = formatDate
-  historyPattern.set(today(), [])
-  selectedDate.value = today()
+  loadFromStorage() // 从存储加载数据
+  if (historyPattern.size === 0) {
+    historyPattern.set(today(), [])
+    selectedDate.value = today()
+  }
   updateTotalPage()
 
   // ====================== 状态修改部分 ======================
@@ -202,6 +245,7 @@ export const usePatternStore = defineStore('pattern', () => {
       reactiveDeepCopy(workspacePattern, newPattern)
       list.push(newPattern)
       updateTotalPage()
+      saveToStorage() // 保存到localStorage
       return true
     }
     return false
@@ -281,6 +325,17 @@ export const usePatternStore = defineStore('pattern', () => {
   function getDateList() {
     return Array.from(historyPattern.keys())
   }
+
+  // 监听重要状态变化自动保存
+  watch(
+    [() => workspacePattern, () => selectedDate.value],
+    () => {
+      console.log('Workspace pattern or selected date changed, saving to storage... $$$')
+
+      saveToStorage()
+    },
+    { deep: true }
+  )
 
   return {
     defaultPattern,

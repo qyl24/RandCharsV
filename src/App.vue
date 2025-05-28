@@ -131,7 +131,8 @@ const handleRefresh = () => {
   selectedShape.value = workspacePattern.shape;
   selectedFont.value = workspacePattern.fontFamily;
   selectedLineStyle.value = workspacePattern.lineStyle;
-  selectedScale.value = (workspacePattern.scale / adjustmentScale).toString();
+  selectedScale.value = parseFloat((workspacePattern.scale / adjustmentScale).toFixed(2)).toString();
+  console.log("@@@ ", selectedScale.value);
 };
 
 

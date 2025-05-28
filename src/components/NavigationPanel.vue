@@ -8,7 +8,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { usePatternStore } from '@/stores/patternStore';
 
 const emit = defineEmits(['refresh']);
